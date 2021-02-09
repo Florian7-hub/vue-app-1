@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="vue-app-1" content="width-device-widh,initial-scale=1">
+    <title>vue-app-1</title>
+    <style>
+        #demo {
+			font-family: 'Helvetica', Arial, sans-serif;
+		}
+		a {
+			text-decoration: none;
+			color: #f66;
+		}
+		li {
+			line-height: 1.5em;
+			margin-bottom: 20px;
+		}
+		.author, .date {
+			font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="demo">
+        <h1>Affichage des informations d'une ville</h1>
+        <input type="text" v-model="search"></input>
+        <button @click="fetchData">Rechercher</button>
+        <ul v-for="ville in filteredVilles">
+            <span>Nom : {{ ville.nom }}</span>
+            </br>
+            <span>Code postal : {{ ville.codesPostaux }}</span>
+            </br>
+            <span>Département : {{ ville.codeDepartement }}</span>
+            </br>
+            <span>Code région : {{ ville.codeRegion }}</span>
+            </br>
+            <span>Population : {{ ville.population }}</span>
+        </ul>
+    </div>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        const apiURL = 'https://geo.api.gouv.fr/communes'
+
+        const demo = new Vue({
+            el:'#demo',
+            data: {
+                villes: [],
+                search: ""
+            },
+            methods:{
+                fetchData: function(){
+                    axios.get(apiURL)
+                    .then((response) => {
+                        console.log(response.data)
+                        this.villes = response.data
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    })
+                }
+            },
+            computed:{ filteredVilles: function () {
+            var villes_array = this.villes,
+                search = this.search;
+
+            if(!search){
+                return villes_array;
+            }
+
+            search = search.trim().toLowerCase();
+
+            villes_array = villes_array.filter(function(item){
+                if(item.nom.toLowerCase().indexOf(search) !== -1){
+                    return item;
+                }
+            })
+
+            // Return an array with the filtered data.
+            return villes_array;;
+        }}
+        })
+    </script>
+
+</body>
+
+</html>
